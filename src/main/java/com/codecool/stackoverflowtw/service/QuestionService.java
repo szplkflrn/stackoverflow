@@ -6,7 +6,12 @@ import com.codecool.stackoverflowtw.controller.dto.QuestionDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -20,14 +25,48 @@ public class QuestionService {
     }
 
     public List<QuestionDTO> getAllQuestions() {
-        // TODO
-        return List.of(new QuestionDTO(1, "example title", "example desc", LocalDateTime.now()));
+
+        List<QuestionDTO> allTheQuestions = new ArrayList<>();
+        try (Connection connection = questionsDAO.getConnection()) {
+            String query = "SELECT * FROM questions";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query);
+                 ResultSet resultSet = preparedStatement.executeQuery()) {
+
+                while (resultSet.next()) {
+                    QuestionDTO question = new QuestionDTO(
+                            resultSet.getInt("id"),
+                            resultSet.getString("title"),
+                            resultSet.getString("description"),
+                            (LocalDateTime) resultSet.getObject("date"));
+                    allTheQuestions.add(question);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return allTheQuestions;
     }
 
     public QuestionDTO getQuestionById(int id) {
-        // TODO
-        questionsDAO.sayHi();
-        return new QuestionDTO(id, "example title", "example desc", LocalDateTime.now());
+        QuestionDTO actualQuestion = null;
+        try (Connection connection = questionsDAO.getConnection()) {
+            String query = "SELECT * FROM questions WHERE id = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setInt(1, id);
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
+                    if (resultSet.next()) {
+                        actualQuestion = new QuestionDTO(
+                                resultSet.getInt("id"),
+                                resultSet.getString("title"),
+                                resultSet.getString("description"),
+                                (LocalDateTime) resultSet.getObject("date"));
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return actualQuestion;
     }
 
     public boolean deleteQuestionById(int id) {
