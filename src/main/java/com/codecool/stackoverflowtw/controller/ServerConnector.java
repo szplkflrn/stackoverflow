@@ -11,7 +11,7 @@ public class ServerConnector {
         try {
             String url = "jdbc:postgresql://localhost:5432/StackoverflowDB";
             String user = "postgres";
-            String password = "JoeSatriani1228";
+            String password = System.getenv("password");
             conn = DriverManager.getConnection(url, user, password);
 
         } catch (SQLException e) {
