@@ -1,5 +1,6 @@
 package com.codecool.stackoverflowtw;
 
+import com.codecool.stackoverflowtw.controller.ServerConnector;
 import com.codecool.stackoverflowtw.dao.QuestionsDAO;
 import com.codecool.stackoverflowtw.dao.QuestionsDaoJdbc;
 import org.springframework.boot.SpringApplication;
@@ -15,6 +16,7 @@ public class StackoverflowTwApplication {
 
     @Bean
     public QuestionsDAO questionsDAO() {
-        return new QuestionsDaoJdbc();
+        ServerConnector serverConnector = new ServerConnector();
+        return new QuestionsDaoJdbc(serverConnector);
     }
 }
