@@ -39,7 +39,7 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            consoleLogger.logInfo(e.getMessage());
         }
         return allTheQuestions;
     }
@@ -62,7 +62,7 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
                 }
             }
         } catch (SQLException e) {
-            e.printStackTrace();
+            consoleLogger.logInfo(e.getMessage());
         }
         return actualQuestion;
     }
