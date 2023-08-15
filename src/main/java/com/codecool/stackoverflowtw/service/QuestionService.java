@@ -26,48 +26,11 @@ public class QuestionService {
     }
 
     public List<QuestionDTO> getAllQuestions() {
-        List<QuestionDTO> allTheQuestions = new ArrayList<>();
-        try (Connection connection = questionsDAO.getConnection()) {
-            String query = "SELECT * FROM questions";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query);
-                 ResultSet resultSet = preparedStatement.executeQuery()) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-                while (resultSet.next()) {
-                    QuestionDTO question = new QuestionDTO(
-                            resultSet.getInt("id"),
-                            resultSet.getString("title"),
-                            resultSet.getString("description"),
-                            LocalDateTime.parse(resultSet.getString("date"),formatter));
-                    allTheQuestions.add(question);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return allTheQuestions;
+       return questionsDAO.getAllQuestions();
     }
 
     public QuestionDTO getQuestionById(int id) {
-        QuestionDTO actualQuestion = null;
-        try (Connection connection = questionsDAO.getConnection()) {
-            String query = "SELECT * FROM questions WHERE id = ?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
-                preparedStatement.setInt(1, id);
-                try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                    if (resultSet.next()) {
-                        actualQuestion = new QuestionDTO(
-                                resultSet.getInt("id"),
-                                resultSet.getString("title"),
-                                resultSet.getString("description"),
-                                (LocalDateTime) resultSet.getObject("date"));
-                    }
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return actualQuestion;
+      return questionsDAO.getQuestionById(id);
     }
 
     public boolean deleteQuestionById(int id) {
