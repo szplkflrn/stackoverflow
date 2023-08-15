@@ -11,6 +11,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,19 +26,19 @@ public class QuestionService {
     }
 
     public List<QuestionDTO> getAllQuestions() {
-
         List<QuestionDTO> allTheQuestions = new ArrayList<>();
         try (Connection connection = questionsDAO.getConnection()) {
             String query = "SELECT * FROM questions";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
                 while (resultSet.next()) {
                     QuestionDTO question = new QuestionDTO(
                             resultSet.getInt("id"),
                             resultSet.getString("title"),
                             resultSet.getString("description"),
-                            (LocalDateTime) resultSet.getObject("date"));
+                            LocalDateTime.parse(resultSet.getString("date"),formatter));
                     allTheQuestions.add(question);
                 }
             }

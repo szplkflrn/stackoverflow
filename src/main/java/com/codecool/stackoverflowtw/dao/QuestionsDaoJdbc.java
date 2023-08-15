@@ -6,23 +6,27 @@ import java.sql.SQLException;
 
 public class QuestionsDaoJdbc implements QuestionsDAO {
 
-    @Override
-    public void sayHi() {
-        System.out.println("Hi DAO!");
-    }
 
-    @Override
     public Connection getConnection() {
         Connection conn = null;
         try {
-            String url = "jdbc:sqlite:src/main/resources/StackoverflowDB.db";
-            conn = DriverManager.getConnection(url);
+            String url = "jdbc:postgresql://localhost:5432/StackoverflowDB";
+            String user = "postgres";
+            String password = "JoeSatriani1228";
+            conn = DriverManager.getConnection(url, user, password);
 
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return conn;
     }
+
+
+    @Override
+    public void sayHi() {
+        System.out.println("Hi DAO!");
+    }
+
 
 
 }
