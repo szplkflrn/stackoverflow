@@ -8,14 +8,25 @@ function createQuestion(question) {
     }).then((res) => res.json());
 }
 
-function onSubmit(e) {
+function createAnswer(answer) {
+    return fetch("http://localhost:8080/answers/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(answer),
+    }).then((res) => res.json());
+}
+
+
+function onListClick(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const question = Object.fromEntries(formData.entries());
+    const answer = Object.fromEntries(formData.entries());
 
-    createQuestion(question)
+    createQuestion(answer)
         .then((response) => {
-            console.log("Question added:", response);
+            console.log("Answer added:", response);
             e.target.reset();
         })
         .catch((error) => {
@@ -35,22 +46,37 @@ function displayHomePage() {
                 <button id="newquestion" type="submit">Add new Question</button>
             </div>
         </form><br><br>
-        <button id="questionlist" onclick="onClick()">List All The Questions</button>
+        <button id="questionlist" onclick="listAllTheQuestions()">List All The Questions</button>
     </div></center>`;
     document.getElementById("root").insertAdjacentHTML("beforeend", innerHTML);
 
     const form = document.getElementById("questionForm");
-    form.addEventListener("submit", onSubmit);
+    form.addEventListener("submit", onListClick);
 }
 
 async function fetchDetails(path) {
     const response = await fetch(path);
     const data = await response.json();
-    console.log(data)
     return data;
 }
 
-function onClick() {
+function addAnswerToQuestion(e){
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const question = Object.fromEntries(formData.entries());
+
+    createQuestion(question)
+        .then((response) => {
+            console.log("Question added:", response);
+            e.target.reset();
+        })
+        .catch((error) => {
+            console.error("Error adding question:", error);
+        });
+}
+
+
+function listAllTheQuestions() {
     fetchDetails("http://localhost:8080/questions/all")
         .then(data => {
             const rootE = document.getElementById("root");
@@ -73,7 +99,6 @@ function onClick() {
 
 
             data.forEach(question => {
-                console.log(question);
                 const questionContainer = document.createElement("div");
                 questionContainer.classList.add("question-container");
 
@@ -87,22 +112,40 @@ function onClick() {
                 const date = document.createElement("p");
                 date.textContent = `Date: ${formattedDate}`;
 
+                const count = document.createElement("p");
+                count.textContent = `Answers: ${question.answer_count}`;
+
                 questionContainer.appendChild(title);
                 questionContainer.appendChild(description);
                 questionContainer.appendChild(date);
+                questionContainer.appendChild(count);
+
+                const form = document.createElement("form");
+                form.addEventListener("submit", addAnswerToQuestion);
+                const input = document.createElement("input");
+                input.type = "text";
+                input.placeholder = "Enter answer here:";
+                form.appendChild(input);
+
+                const answerbutton = document.createElement("button");
+                answerbutton.textContent = `Add answer`;
+                answerbutton.type = "button";
+                answerbutton.onclick = addAnswerToQuestion;
+
+                form.appendChild(answerbutton);
+                questionContainer.appendChild(form);
 
                 rootE.appendChild(questionContainer);
 
                 const emptyLine = document.createElement("hr");
                 rootE.appendChild(emptyLine);
+                rootE.appendChild(document.createElement("br"));
             });
         })
         .catch(error => {
             console.error("Error fetching questions:", error);
         });
 }
-
-
 
 
 function main() {

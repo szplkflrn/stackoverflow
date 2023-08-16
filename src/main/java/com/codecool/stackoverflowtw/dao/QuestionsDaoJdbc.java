@@ -26,7 +26,7 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
     public List<QuestionDTO> getAllQuestions() {
         List<QuestionDTO> allTheQuestions = new ArrayList<>();
         try (Connection connection = serverConnector.getConnection()) {
-            String query = "SELECT * FROM questions";
+            String query = "SELECT questions.*, COUNT(answers.question_id) AS answer_count FROM questions LEFT JOIN answers ON questions.id = answers.question_id GROUP BY questions.id ";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
@@ -34,7 +34,8 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
                             resultSet.getInt("id"),
                             resultSet.getString("title"),
                             resultSet.getString("description"),
-                            LocalDateTime.parse(resultSet.getString("date")));
+                            LocalDateTime.parse(resultSet.getString("date")),
+                            resultSet.getInt("answer_count"));
                     allTheQuestions.add(question);
                 }
             }
@@ -48,7 +49,7 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
     public QuestionDTO getQuestionById(int id) {
         QuestionDTO actualQuestion = null;
         try (Connection connection = serverConnector.getConnection()) {
-            String query = "SELECT * FROM questions WHERE id = ?";
+            String query = "SELECT questions.*, COUNT(answers.question_id) AS answer_count FROM questions LEFT JOIN answers ON questions.id = answers.question_id WHERE questions.id = ?  GROUP BY questions.id ";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, id);
                 try (ResultSet resultSet = preparedStatement.executeQuery()) {
@@ -57,7 +58,8 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
                                 resultSet.getInt("id"),
                                 resultSet.getString("title"),
                                 resultSet.getString("description"),
-                                LocalDateTime.parse(resultSet.getString("date")));
+                                LocalDateTime.parse(resultSet.getString("date")),
+                                resultSet.getInt("answer_count"));
                     }
                 }
             }
@@ -87,16 +89,22 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
 
     public int addNewQuestion(Question question) {
         try (Connection connection = serverConnector.getConnection()) {
-            String query = "INSERT INTO questions (title,description,date,answer_count) VALUES (?,?,?,?)";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            String query = "INSERT INTO questions (title,description,date) VALUES (?,?,?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
                 preparedStatement.setString(1, question.getQuestionText());
                 preparedStatement.setString(2, question.getDescription());
                 preparedStatement.setString(3, String.valueOf(LocalDateTime.now()));
-                preparedStatement.setInt(4, question.getAnswerCount());
                 preparedStatement.executeUpdate();
+
                 ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
-                consoleLogger.logInfo("Question added to database");
-                return generatedKeys.getInt(0);
+                if (generatedKeys.next()) {
+                    int generatedId = generatedKeys.getInt(1);
+                    consoleLogger.logInfo("Question added to database");
+                    return generatedId;
+                } else {
+                    consoleLogger.logError("Failed to retrieve generated key");
+                    return 0;
+                }
             }
         } catch (SQLException e) {
             consoleLogger.logError(e.getMessage());
