@@ -1,12 +1,46 @@
+function createQuestion(question) {
+    return fetch("http://localhost:8080/questions/", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(question),
+    }).then((res) => res.json());
+}
 
+function onSubmit(e) {
+    e.preventDefault();
+    const formData = new FormData(e.target);
+    const question = Object.fromEntries(formData.entries());
+
+    createQuestion(question)
+        .then((response) => {
+            console.log("Question added:", response);
+            e.target.reset();
+        })
+        .catch((error) => {
+            console.error("Error adding question:", error);
+        });
+}
 
 function displayHomePage() {
     const innerHTML = `<center><div id="home">
-  <p id="greetings">Welcome to STACKOVERFLOW!<p>
-  <button id="questionlist">List All The Questions</button><br><br>
-  <button id="newquestion">Add new Question</button>
-  </div></center>`;
+        <p id="greetings">Welcome to STACKOVERFLOW!</p>
+        <form id="questionForm">
+            <div>
+                <label htmlFor="title"></label>
+                <input type="text" placeholder="Enter question here:" name="title">
+            </div>
+            <div>
+                <button id="newquestion" type="submit">Add new Question</button>
+            </div>
+        </form><br><br>
+        <button id="questionlist" onclick="onClick()">List All The Questions</button>
+    </div></center>`;
     document.getElementById("root").insertAdjacentHTML("beforeend", innerHTML);
+
+    const form = document.getElementById("questionForm");
+    form.addEventListener("submit", onSubmit);
 }
 
 async function fetchDetails(path) {
@@ -16,17 +50,63 @@ async function fetchDetails(path) {
     return data;
 }
 
-async function get (){
-    const data = await fetchDetails("http://localhost:8080/questions/all");
-    const rootE = document.getElementById("root");
+function onClick() {
+    fetchDetails("http://localhost:8080/questions/all")
+        .then(data => {
+            const rootE = document.getElementById("root");
+
+            const questionListButton = document.getElementById("questionlist");
+            questionListButton.style.display = "none";
+
+            const backButton = document.createElement("button");
+            backButton.textContent = "Back";
+            backButton.classList.add("back-button");
+            backButton.addEventListener("click", () => {
+                location.reload();
+            });
+
+            const backButtonContainer = document.createElement("div");
+            backButtonContainer.classList.add("back-button-container");
+            backButtonContainer.appendChild(backButton);
+
+            rootE.appendChild(backButtonContainer);
 
 
+            data.forEach(question => {
+                console.log(question);
+                const questionContainer = document.createElement("div");
+                questionContainer.classList.add("question-container");
+
+                const title = document.createElement("h3");
+                title.textContent = `Title: ${question.title}`;
+
+                const description = document.createElement("p");
+                description.textContent = `Description: ${question.description}`;
+
+                const formattedDate = new Date(question.created.replace('T', ' ')).toLocaleString();
+                const date = document.createElement("p");
+                date.textContent = `Date: ${formattedDate}`;
+
+                questionContainer.appendChild(title);
+                questionContainer.appendChild(description);
+                questionContainer.appendChild(date);
+
+                rootE.appendChild(questionContainer);
+
+                const emptyLine = document.createElement("hr");
+                rootE.appendChild(emptyLine);
+            });
+        })
+        .catch(error => {
+            console.error("Error fetching questions:", error);
+        });
 }
+
+
 
 
 function main() {
     displayHomePage();
-get();
 }
 
 

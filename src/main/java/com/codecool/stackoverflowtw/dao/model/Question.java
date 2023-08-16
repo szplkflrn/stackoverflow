@@ -1,17 +1,31 @@
 package com.codecool.stackoverflowtw.dao.model;
 
 public class Question {
-    private int questionId;
+
     private String questionText;
     private String description;
-    private int answerId;
+    private int answerCount;
 
-    public Question(int questionId, String questionText, String description, int answerId) {
-        this.questionId = questionId;
+
+    public Question(String questionText, String description, int answerCount) {
         this.questionText = questionText;
         this.description = description;
-        this.answerId = answerId;
+        this.answerCount = answerCount;
     }
+
+
+    public int getAnswerCount() {
+        return answerCount;
+    }
+
+    public String getQuestionText() {
+        return questionText;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
 
 }
 

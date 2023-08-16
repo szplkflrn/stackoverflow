@@ -13,6 +13,7 @@ import java.util.List;
 public class QuestionController {
     private final QuestionService questionService;
 
+
     @Autowired
     public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
@@ -30,11 +31,12 @@ public class QuestionController {
 
     @PostMapping("/")
     public int addNewQuestion(@RequestBody NewQuestionDTO question) {
-        return 0;
+        return questionService.addNewQuestion(question);
     }
 
     @DeleteMapping("/{id}")
     public boolean deleteQuestionById(@PathVariable int id) {
-        return false;
+
+        return questionService.deleteQuestionById(id);
     }
 }
