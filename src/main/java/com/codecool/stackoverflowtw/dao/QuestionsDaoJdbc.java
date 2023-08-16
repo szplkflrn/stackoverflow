@@ -1,7 +1,9 @@
 package com.codecool.stackoverflowtw.dao;
 
 import com.codecool.stackoverflowtw.controller.ServerConnector;
+import com.codecool.stackoverflowtw.controller.dto.NewQuestionDTO;
 import com.codecool.stackoverflowtw.controller.dto.QuestionDTO;
+import com.codecool.stackoverflowtw.dao.model.Question;
 import com.codecool.stackoverflowtw.logger.Logger;
 
 import java.sql.*;
@@ -27,14 +29,12 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
             String query = "SELECT * FROM questions";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
                 while (resultSet.next()) {
                     QuestionDTO question = new QuestionDTO(
                             resultSet.getInt("id"),
                             resultSet.getString("title"),
                             resultSet.getString("description"),
-                            LocalDateTime.parse(resultSet.getString("date"),formatter));
+                            LocalDateTime.parse(resultSet.getString("date")));
                     allTheQuestions.add(question);
                 }
             }
@@ -57,7 +57,7 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
                                 resultSet.getInt("id"),
                                 resultSet.getString("title"),
                                 resultSet.getString("description"),
-                                (LocalDateTime) resultSet.getObject("date"));
+                                LocalDateTime.parse(resultSet.getString("date")));
                     }
                 }
             }
@@ -68,7 +68,7 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
     }
 
     public boolean deleteQuestionById(int id) {
-        try (Connection connection = serverConnector.getConnection()){
+        try (Connection connection = serverConnector.getConnection()) {
             String query = "DELETE FROM questions WHERE id = ?";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, id);
@@ -85,13 +85,30 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
 
     }
 
+    public int addNewQuestion(Question question) {
+        try (Connection connection = serverConnector.getConnection()) {
+            String query = "INSERT INTO questions (title,description,date,answer_count) VALUES (?,?,?,?)";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+                preparedStatement.setString(1, question.getQuestionText());
+                preparedStatement.setString(2, question.getDescription());
+                preparedStatement.setString(3, String.valueOf(LocalDateTime.now()));
+                preparedStatement.setInt(4, question.getAnswerCount());
+                preparedStatement.executeUpdate();
+                ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+                consoleLogger.logInfo("Question added to database");
+                return generatedKeys.getInt(0);
+            }
+        } catch (SQLException e) {
+            consoleLogger.logError(e.getMessage());
+            return 0;
+        }
+    }
 
 
     @Override
     public void sayHi() {
         System.out.println("Hi DAO!");
     }
-
 
 
 }
