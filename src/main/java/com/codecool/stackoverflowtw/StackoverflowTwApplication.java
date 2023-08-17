@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Bean;
 public class StackoverflowTwApplication {
     ServerConnector serverConnector = new ServerConnector();
     Logger consoleLogger = new ConsoleLogger();
+
     public static void main(String[] args) {
         SpringApplication.run(StackoverflowTwApplication.class, args);
     }
@@ -23,8 +24,9 @@ public class StackoverflowTwApplication {
     public QuestionsDAO questionsDAO() {
         return new QuestionsDaoJdbc(serverConnector, consoleLogger);
     }
+
     @Bean
-    public AnswerDAO answerDAO(){
+    public AnswerDAO answerDAO() {
         return new AnswerDaoJdbc(serverConnector, consoleLogger);
     }
 }

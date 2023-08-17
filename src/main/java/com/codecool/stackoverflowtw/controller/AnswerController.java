@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+
 @RestController
 @RequestMapping("answers")
 public class AnswerController {
@@ -26,7 +27,7 @@ public class AnswerController {
     }
 
     @GetMapping("/{id}")
-    public List <AnswerDTO> getQuestionById(@PathVariable int id) {
+    public List<AnswerDTO> getQuestionById(@PathVariable int id) {
         return answerService.getAnswerById(id);
     }
 

@@ -12,6 +12,7 @@ import java.util.List;
 @Service
 public class AnswerService {
     private AnswerDAO answerDAO;
+
     @Autowired
     public AnswerService(AnswerDAO answerDAO) {
         this.answerDAO = answerDAO;
@@ -30,6 +31,6 @@ public class AnswerService {
     }
 
     public int addNewAnswer(NewAnswerDTO answerDTO) {
-        return answerDAO.addNewAnswer(new Answer(answerDTO.answer(),answerDTO.question_id()));
+        return answerDAO.addNewAnswer(new Answer(answerDTO.answer(), answerDTO.question_id()));
     }
 }

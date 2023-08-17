@@ -6,7 +6,6 @@ public class Question {
     private String description;
 
 
-
     public Question(String questionText, String description) {
         this.questionText = questionText;
         this.description = description;

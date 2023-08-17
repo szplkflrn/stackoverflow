@@ -27,11 +27,11 @@ public class QuestionService {
     }
 
     public List<QuestionDTO> getAllQuestions() {
-       return questionsDAO.getAllQuestions();
+        return questionsDAO.getAllQuestions();
     }
 
     public QuestionDTO getQuestionById(int id) {
-      return questionsDAO.getQuestionById(id);
+        return questionsDAO.getQuestionById(id);
     }
 
     public boolean deleteQuestionById(int id) {
@@ -39,6 +39,6 @@ public class QuestionService {
     }
 
     public int addNewQuestion(NewQuestionDTO questionDTO) {
-        return questionsDAO.addNewQuestion(new Question(questionDTO.title(),""));
+        return questionsDAO.addNewQuestion(new Question(questionDTO.title(), ""));
     }
 }
