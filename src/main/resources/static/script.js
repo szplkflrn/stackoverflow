@@ -8,6 +8,18 @@ function createQuestion(question) {
     }).then((res) => res.json());
 }
 
+function deleteQuestion(question, id) {
+    return fetch(`http://localhost:8080/questions/${id}`, {
+        method: "DELETE",
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(question),
+    }).then((res) => res.json());
+}
+
+
+
 function createAnswer(answer) {
     return fetch("http://localhost:8080/answers/", {
         method: "POST",
@@ -40,11 +52,14 @@ function displayHomePage() {
     const innerHTML = `<center><div id="home">
         <p id="greetings">Welcome to STACKOVERFLOW!</p>
         <button id="questionlist" onclick="listAllTheQuestions()">List All The Questions</button><br><br>
+        <br>
         <form id="questionForm">
             <div>
                 <label htmlFor="title"></label>
                 <input type="text" id="inputField" placeholder="Enter question here:" name="title">
+                
             </div>
+            <br>
             <div>
                 <button id="newquestion" type="submit">Add new Question</button>
             </div>
@@ -97,26 +112,21 @@ function addAnswerToQuestion(e, question_id) {
 function listAllTheQuestions() {
     fetchDetails("http://localhost:8080/questions/all")
         .then(data => {
-            const rootE = document.getElementById("root");
+            const rootE = document.getElementById("allQuestions");
 
             const questionListButton = document.getElementById("questionlist");
             questionListButton.style.display = "none";
 
             const backButton = document.createElement("button");
             backButton.textContent = "Back";
-            backButton.classList.add("back-button");
             backButton.addEventListener("click", () => {
                 location.reload();
             });
 
-            const backButtonContainer = document.createElement("div");
-            backButtonContainer.classList.add("back-button-container");
-            backButtonContainer.appendChild(backButton);
 
-            rootE.appendChild(backButtonContainer);
-
-
+            rootE.appendChild(backButton);
             questionDisplayer(data);
+
 
         })
         .catch(error => {
@@ -170,7 +180,13 @@ function questionDisplayer(baseData, rootE) {
         const answerContainer = document.createElement("div");
         const showTheAnswersButton = document.createElement("button");
         showTheAnswersButton.textContent = "Show the answers";
-
+        const deleteButton = document.createElement("button");
+        deleteButton.textContent="Delete question";
+        deleteButton.addEventListener("click", e => {
+            deleteQuestion(question,question.id);
+            document.getElementById("allQuestions").innerHTML="";
+            listAllTheQuestions();
+        });
 
         const showTheAnswersBackButton = document.createElement("button");
         showTheAnswersBackButton.textContent = "Close";
@@ -194,6 +210,7 @@ function questionDisplayer(baseData, rootE) {
         questionContainer.appendChild(date);
         questionContainer.appendChild(count);
         questionContainer.appendChild(answerContainer);
+        questionContainer.appendChild(deleteButton)
 
         if (question.answer_count > 0) {
             questionContainer.appendChild(showTheAnswersButton);
