@@ -26,7 +26,7 @@ public class QuestionsDaoJdbc implements QuestionsDAO {
     public List<QuestionDTO> getAllQuestions() {
         List<QuestionDTO> allTheQuestions = new ArrayList<>();
         try (Connection connection = serverConnector.getConnection()) {
-            String query = "SELECT questions.*, COUNT(answers.question_id) AS answer_count FROM questions LEFT JOIN answers ON questions.id = answers.question_id GROUP BY questions.id ";
+            String query = "SELECT questions.*, COUNT(answers.question_id) AS answer_count FROM questions LEFT JOIN answers ON questions.id = answers.question_id GROUP BY questions.id, questions.title, questions.description, questions.date ";
             try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
