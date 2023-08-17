@@ -48,9 +48,9 @@ public class AnswerDaoJdbc implements AnswerDAO {
         List<AnswerDTO> allTheQuestions = new ArrayList<>();
         try (Connection connection = serverConnector.getConnection()) {
             String query = "SELECT answers.* FROM answers LEFT JOIN questions ON questions.id = answers.question_id WHERE question_id = ?";
-            try (PreparedStatement preparedStatement = connection.prepareStatement(query)){
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
                 preparedStatement.setInt(1, find);
-             try (ResultSet resultSet = preparedStatement.executeQuery()){
+                try (ResultSet resultSet = preparedStatement.executeQuery()) {
                     while (resultSet.next()) {
                         AnswerDTO question = new AnswerDTO(
                                 resultSet.getInt("id"),

@@ -19,7 +19,6 @@ function deleteQuestion(question, id) {
 }
 
 
-
 function createAnswer(answer) {
     return fetch("http://localhost:8080/answers/", {
         method: "POST",
@@ -34,17 +33,17 @@ function createAnswer(answer) {
 function onListClick(e) {
     e.preventDefault();
 
-        const formData = new FormData(e.target);
-        const question = Object.fromEntries(formData.entries());
+    const formData = new FormData(e.target);
+    const question = Object.fromEntries(formData.entries());
 
-        createQuestion(question)
-            .then((response) => {
-                console.log("Question added:", response);
-                e.target.reset();
-            })
-            .catch((error) => {
-                console.error("Error adding question:", error);
-            });
+    createQuestion(question)
+        .then((response) => {
+            console.log("Question added:", response);
+            e.target.reset();
+        })
+        .catch((error) => {
+            console.error("Error adding question:", error);
+        });
 
 }
 
@@ -80,7 +79,7 @@ async function fetchDetails(path) {
 }
 
 
- function showTheAnswersForSpecificQuestion(id,answerContainer) {
+function showTheAnswersForSpecificQuestion(id, answerContainer) {
     const url = `http://localhost:8080/answers/${id}`;
     console.log("Fetching from URL:", url);
 
@@ -135,7 +134,7 @@ function listAllTheQuestions() {
 }
 
 function answerDisplayer(data, answerContainer) {
-    answerContainer.innerHTML="";
+    answerContainer.innerHTML = "";
 
     data.forEach(answer => {
         console.log(answer)
@@ -181,17 +180,17 @@ function questionDisplayer(baseData, rootE) {
         const showTheAnswersButton = document.createElement("button");
         showTheAnswersButton.textContent = "Show the answers";
         const deleteButton = document.createElement("button");
-        deleteButton.textContent="Delete question";
+        deleteButton.textContent = "Delete question";
         deleteButton.addEventListener("click", e => {
-            deleteQuestion(question,question.id);
-            document.getElementById("allQuestions").innerHTML="";
+            deleteQuestion(question, question.id);
+            document.getElementById("allQuestions").innerHTML = "";
             listAllTheQuestions();
         });
 
         const showTheAnswersBackButton = document.createElement("button");
         showTheAnswersBackButton.textContent = "Close";
         showTheAnswersBackButton.addEventListener("click", event => {
-            answerContainer.innerHTML="";
+            answerContainer.innerHTML = "";
             questionContainer.removeChild(showTheAnswersBackButton);
             questionContainer.appendChild(showTheAnswersButton)
         })
@@ -199,7 +198,7 @@ function questionDisplayer(baseData, rootE) {
 
         showTheAnswersButton.addEventListener("click", event => {
             const questionId = question.id;
-            showTheAnswersForSpecificQuestion(questionId,answerContainer);
+            showTheAnswersForSpecificQuestion(questionId, answerContainer);
             questionContainer.removeChild(showTheAnswersButton);
             questionContainer.appendChild(showTheAnswersBackButton)
 
@@ -220,7 +219,7 @@ function questionDisplayer(baseData, rootE) {
         answerForm.classList.add("answer-form");
         answerForm.addEventListener("submit", (e) => {
             addAnswerToQuestion(e, question.id);
-            document.getElementById("allQuestions").innerHTML="";
+            document.getElementById("allQuestions").innerHTML = "";
             listAllTheQuestions()
         });
 
