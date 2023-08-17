@@ -42,7 +42,8 @@ function displayHomePage() {
         <button id="questionlist" onclick="listAllTheQuestions()">List All The Questions</button><br><br>
         <form id="questionForm">
             <div>
-                <input type="text" placeholder="Enter question here:" name="title">
+                <label htmlFor="title"></label>
+                <input type="text" id="inputField" placeholder="Enter question here:" name="title">
             </div>
             <div>
                 <button id="newquestion" type="submit">Add new Question</button>
