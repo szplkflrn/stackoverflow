@@ -114,6 +114,7 @@ function listAllTheQuestions() {
             questionListButton.style.display = "none";
 
             const backButton = document.createElement("button");
+            backButton.id = "backButton"
             backButton.textContent = "Back";
             backButton.addEventListener("click", () => {
                 location.reload();
@@ -132,13 +133,14 @@ function listAllTheQuestions() {
 
 function answerDisplayer(data, answerContainer) {
     answerContainer.innerHTML = "";
-
+    let answerCount = 1;
     data.forEach(answer => {
         const answerContainer1 = document.createElement("div");
         answerContainer1.classList.add("answer-container");
 
-        const answerContent = document.createElement("p");
-        answerContent.textContent = `Answer: ${answer.answer}`;
+        const answerContent = document.createElement("h2");
+        answerContent.textContent = `${answerCount}. answer: ${answer.answer}`;
+        answerCount++;
 
         const formattedDate = new Date(answer.created.replace('T', ' ')).toLocaleString();
         const date = document.createElement("p");
@@ -155,27 +157,32 @@ function answerDisplayer(data, answerContainer) {
 
 }
 
-function questionDisplayer(baseData, rootE) {
+function questionDisplayer(baseData) {
+    let questionCount = 1;
     baseData.forEach(question => {
+
         const questionContainer = document.createElement("div");
         questionContainer.classList.add("question-container");
 
 
-        const title = document.createElement("h3");
-        title.textContent = `Question: ${question.title}`;
+        const title = document.createElement("h1");
+        title.textContent = `${questionCount}: ${question.title}`;
+        questionCount++;
 
 
         const formattedDate = new Date(question.created.replace('T', ' ')).toLocaleString();
-        const date = document.createElement("p");
+        const date = document.createElement("h3");
         date.textContent = `Date: ${formattedDate}`;
 
-        const count = document.createElement("p");
-        count.textContent = `Answers: ${question.answer_count}`;
+        const count = document.createElement("h3");
+        count.textContent = `There are ${question.answer_count} answers to this question!`;
 
         const answerContainer = document.createElement("div");
         const showTheAnswersButton = document.createElement("button");
+        showTheAnswersButton.id = "showTheAnswersButton"
         showTheAnswersButton.textContent = "Show the answers";
         const deleteButton = document.createElement("button");
+        deleteButton.id = "deleteButton"
         deleteButton.textContent = "Delete question";
         deleteButton.addEventListener("click", e => {
             deleteQuestion(question, question.id);
@@ -184,6 +191,7 @@ function questionDisplayer(baseData, rootE) {
         });
 
         const showTheAnswersBackButton = document.createElement("button");
+        showTheAnswersBackButton.id = "showTheAnswersBackButton"
         showTheAnswersBackButton.textContent = "Close";
         showTheAnswersBackButton.addEventListener("click", event => {
             answerContainer.innerHTML = "";
@@ -205,7 +213,7 @@ function questionDisplayer(baseData, rootE) {
         questionContainer.appendChild(date);
         questionContainer.appendChild(count);
         questionContainer.appendChild(answerContainer);
-        questionContainer.appendChild(deleteButton)
+
 
         if (question.answer_count > 0) {
             questionContainer.appendChild(showTheAnswersButton);
@@ -216,23 +224,38 @@ function questionDisplayer(baseData, rootE) {
         answerForm.addEventListener("submit", (e) => {
             addAnswerToQuestion(e, question.id);
             document.getElementById("allQuestions").innerHTML = "";
-            listAllTheQuestions()
+            listAllTheQuestions();
         });
 
 
         const answerInput = document.createElement("input");
         answerInput.type = "text";
-        answerInput.placeholder = "Enter your answer here...";
+        answerInput.id = "answerInput"
+        answerInput.placeholder = "Enter your answer here:";
         answerInput.name = "answer";
 
         const submitButton = document.createElement("button");
+        submitButton.id = "submitButton"
         submitButton.type = "submit";
         submitButton.textContent = "Submit Answer";
 
-
+        const emptyline = document.createElement("br");
+        const emptyline1 = document.createElement("br")
+        const emptyline2 = document.createElement("br")
+        const emptyline3 = document.createElement("br")
+        const emptyline4 = document.createElement("br")
+        const emptyline5 = document.createElement("br")
+        answerForm.appendChild(emptyline3);
+        answerForm.appendChild(emptyline4);
         answerForm.appendChild(answerInput);
+        answerForm.appendChild(emptyline);
+        answerForm.appendChild(emptyline5);
         answerForm.appendChild(submitButton);
+        answerForm.appendChild(emptyline1);
+        answerForm.appendChild(emptyline2);
         questionContainer.appendChild(answerForm);
+
+        questionContainer.appendChild(deleteButton)
 
 
         const allQ = document.getElementById("allQuestions");
@@ -241,6 +264,7 @@ function questionDisplayer(baseData, rootE) {
         const emptyLine = document.createElement("hr");
         allQ.appendChild(emptyLine);
         allQ.appendChild(document.createElement("br"));
+
     });
 }
 

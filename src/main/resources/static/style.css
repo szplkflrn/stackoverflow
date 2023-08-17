@@ -10,11 +10,23 @@
 }
 
 #inputField {
-    width: 140px;
+    width: 400px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 12px;
+    transition: width 0.4s ease-in-out;
+}
+#inputField:focus {
+    width: 50%;
 }
 
 /* CSS */
-#sorting_title, #sorting_created, #sorting_answer_count, #newquestion {
+#sorting_title, #sorting_created, #sorting_answer_count, #newquestion, #backButton,#showTheAnswersButton,#showTheAnswersBackButton, #deleteButton,#submitButton {
     align-items: center;
     appearance: none;
     background-color: #FCFCFD;
@@ -44,6 +56,24 @@
     will-change: box-shadow, transform;
     font-size: 18px;
 }
+
+#answerInput {
+    width: 250px;
+    box-sizing: border-box;
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: white;
+    background-position: 10px 10px;
+    background-repeat: no-repeat;
+    padding: 12px 20px 12px 12px;
+    transition: width 0.4s ease-in-out;
+}
+
+#answerInput:focus {
+    width: 50%;
+}
+
 
 .button-30:focus {
     box-shadow: #D6D6E7 0 0 0 1.5px inset, rgba(45, 35, 66, 0.4) 0 2px 4px, rgba(45, 35, 66, 0.3) 0 7px 13px -3px, #D6D6E7 0 -3px 0 inset;
