@@ -47,6 +47,7 @@ function displayHomePage() {
             </div>
         </form><br><br>
         <button id="questionlist" onclick="listAllTheQuestions()">List All The Questions</button>
+        <div id="allQuestions"></div>
     </div></center>`;
     document.getElementById("root").insertAdjacentHTML("beforeend", innerHTML);
 
@@ -107,34 +108,44 @@ function listAllTheQuestions() {
             rootE.appendChild(backButtonContainer);
 
 
-            data.forEach(question => {
-                const questionContainer = document.createElement("div");
-                questionContainer.classList.add("question-container");
+            questionDisplayer(data);
 
-                const title = document.createElement("h3");
-                title.textContent = `Title: ${question.title}`;
+        })
+        .catch(error => {
+            console.error("Error fetching questions:", error);
+        });
+}
 
-                const description = document.createElement("p");
-                description.textContent = `Description: ${question.description}`;
+function questionDisplayer(baseData) {
+    baseData.forEach(question => {
+        const questionContainer = document.createElement("div");
+        questionContainer.classList.add("question-container");
 
-                const formattedDate = new Date(question.created.replace('T', ' ')).toLocaleString();
-                const date = document.createElement("p");
-                date.textContent = `Date: ${formattedDate}`;
 
-                const count = document.createElement("p");
-                count.textContent = `Answers: ${question.answer_count}`;
+        const title = document.createElement("h3");
+        title.textContent = `Title: ${question.title}`;
 
-                const showTheAnswersButton = document.createElement("button");
-                showTheAnswersButton.textContent= "Show the answers";
-                showTheAnswersButton.addEventListener("click", showTheAnswersForSpecificQuestion);
+        const description = document.createElement("p");
+        description.textContent = `Description: ${question.description}`;
 
-                questionContainer.appendChild(title);
-                questionContainer.appendChild(description);
-                questionContainer.appendChild(date);
-                questionContainer.appendChild(count);
-                if(question.answer_count > 0){
-                    questionContainer.appendChild(showTheAnswersButton);
-                }
+        const formattedDate = new Date(question.created.replace('T', ' ')).toLocaleString();
+        const date = document.createElement("p");
+        date.textContent = `Date: ${formattedDate}`;
+
+        const count = document.createElement("p");
+        count.textContent = `Answers: ${question.answer_count}`;
+      
+        const showTheAnswersButton = document.createElement("button");
+        showTheAnswersButton.textContent= "Show the answers";
+        showTheAnswersButton.addEventListener("click", showTheAnswersForSpecificQuestion);
+
+        questionContainer.appendChild(title);
+        questionContainer.appendChild(description);
+        questionContainer.appendChild(date);
+        questionContainer.appendChild(count);
+        if(question.answer_count > 0){
+        questionContainer.appendChild(showTheAnswersButton);
+         }
 
                 const answerForm = document.createElement("form");
                 answerForm.classList.add("answer-form");
@@ -154,22 +165,85 @@ function listAllTheQuestions() {
                 answerForm.appendChild(answerInput);
                 answerForm.appendChild(submitButton);
                 questionContainer.appendChild(answerForm);
+      
 
-                rootE.appendChild(questionContainer);
+        const allQ = document.getElementById("allQuestions");
+        allQ.appendChild(questionContainer);
 
-                const emptyLine = document.createElement("hr");
-                rootE.appendChild(emptyLine);
-                rootE.appendChild(document.createElement("br"));
-            });
-        })
-        .catch(error => {
-            console.error("Error fetching questions:", error);
-        });
+        const emptyLine = document.createElement("hr");
+        allQ.appendChild(emptyLine);
+        allQ.appendChild(document.createElement("br"));
+    });
 }
+
+//Sorting
+function sortingButton(sortBy) {
+    const allQ = document.getElementById("allQuestions");
+    allQ.innerHTML = "";
+    const rootDiv = document.getElementById('root');
+
+    rootDiv.insertAdjacentHTML('beforeend', `<button id="sorting_${sortBy}">sorting${sortBy}</button>`);
+
+    const sortingButton = rootDiv.querySelector(`#sorting_${sortBy}`);
+
+
+    sortingButton.addEventListener('click', () => {
+        console.log("Működik!");
+        sortingMechanism(sortBy);
+    });
+
+}
+
+let ascendingOrder = true;
+
+async function sortingMechanism(sortBy) {
+    try {
+        const response = await fetch("http://localhost:8080/questions/all");
+        const questionsArray = await response.json();
+
+        if (ascendingOrder) {
+            questionsArray.sort(function (a, b) {
+                if (a[sortBy] < b[sortBy]) {
+                    return -1;
+                }
+                if (a[sortBy] > b[sortBy]) {
+                    return 1;
+                }
+                return 0;
+            });
+        } else {
+            questionsArray.sort(function (a, b) {
+                if (a[sortBy] > b[sortBy]) {
+                    return -1;
+                }
+                if (a[sortBy] < b[sortBy]) {
+                    return 1;
+                }
+                return 0;
+            });
+        }
+
+        const allQuestionsDiv = document.getElementById("allQuestions");
+        allQuestionsDiv.innerHTML = "";
+
+        questionDisplayer(questionsArray);
+
+
+        ascendingOrder = !ascendingOrder;
+
+    } catch (error) {
+        console.error("Error fetching and sorting data:", error);
+    }
+}
+
+
 
 
 function main() {
     displayHomePage();
+    sortingButton("title");
+    sortingButton("created");
+    sortingButton("answer_count");
 }
 
 
