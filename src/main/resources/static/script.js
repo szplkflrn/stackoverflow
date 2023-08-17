@@ -37,6 +37,7 @@ function onListClick(e) {
 function displayHomePage() {
     const innerHTML = `<center><div id="home">
         <p id="greetings">Welcome to STACKOVERFLOW!</p>
+        <div id="sortingButtons"></div>
         <form id="questionForm">
             <div>
                 <label htmlFor="title"></label>
@@ -160,11 +161,11 @@ function questionDisplayer(baseData) {
 function sortingButton(sortBy) {
     const allQ = document.getElementById("allQuestions");
     allQ.innerHTML = "";
-    const rootDiv = document.getElementById('root');
+    const sortingButtons = document.getElementById('sortingButtons');
 
-    rootDiv.insertAdjacentHTML('beforeend', `<button id="sorting_${sortBy}">sorting${sortBy}</button>`);
+    sortingButtons.insertAdjacentHTML('beforeend', `<button id="sorting_${sortBy}">sorting${sortBy}</button>`);
 
-    const sortingButton = rootDiv.querySelector(`#sorting_${sortBy}`);
+    const sortingButton = sortingButtons.querySelector(`#sorting_${sortBy}`);
 
     sortingButton.addEventListener('click', () => {
         console.log("Működik!");
