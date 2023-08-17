@@ -21,7 +21,7 @@ function createAnswer(answer) {
 
 function onListClick(e) {
     e.preventDefault();
-    if (e.target && e.target.value !== undefined) {
+
         const formData = new FormData(e.target);
         const question = Object.fromEntries(formData.entries());
 
@@ -33,13 +33,13 @@ function onListClick(e) {
             .catch((error) => {
                 console.error("Error adding question:", error);
             });
-    }
+
 }
 
 function displayHomePage() {
     const innerHTML = `<center><div id="home">
         <p id="greetings">Welcome to STACKOVERFLOW!</p>
-        <div id="sortingButtons"></div>
+        <button id="questionlist" onclick="listAllTheQuestions()">List All The Questions</button><br><br>
         <form id="questionForm">
             <div>
                 <label htmlFor="title"></label>
@@ -49,7 +49,7 @@ function displayHomePage() {
                 <button id="newquestion" type="submit">Add new Question</button>
             </div>
         </form><br><br>
-        <button id="questionlist" onclick="listAllTheQuestions()">List All The Questions</button>
+        <div id="sortingButtons"></div>
         <div id="allQuestions"></div>
     </div></center>`;
     document.getElementById("root").insertAdjacentHTML("beforeend", innerHTML);
@@ -138,8 +138,12 @@ function answerDisplayer(data, answerContainer) {
         const formattedDate = new Date(answer.created.replace('T', ' ')).toLocaleString();
         const date = document.createElement("p");
         date.textContent = `Date: ${formattedDate}`;
+        const emptyLine = document.createElement("hr");
+
+        answerContainer1.appendChild(emptyLine);
         answerContainer1.appendChild(answerContent);
         answerContainer1.appendChild(date);
+
         answerContainer.appendChild(answerContainer1);
 
     });
@@ -153,10 +157,8 @@ function questionDisplayer(baseData, rootE) {
 
 
         const title = document.createElement("h3");
-        title.textContent = `Title: ${question.title}`;
+        title.textContent = `Question: ${question.title}`;
 
-        const description = document.createElement("p");
-        description.textContent = `Description: ${question.description}`;
 
         const formattedDate = new Date(question.created.replace('T', ' ')).toLocaleString();
         const date = document.createElement("p");
@@ -168,6 +170,7 @@ function questionDisplayer(baseData, rootE) {
         const answerContainer = document.createElement("div");
         const showTheAnswersButton = document.createElement("button");
         showTheAnswersButton.textContent = "Show the answers";
+
 
         const showTheAnswersBackButton = document.createElement("button");
         showTheAnswersBackButton.textContent = "Close";
@@ -188,7 +191,6 @@ function questionDisplayer(baseData, rootE) {
 
 
         questionContainer.appendChild(title);
-        questionContainer.appendChild(description);
         questionContainer.appendChild(date);
         questionContainer.appendChild(count);
         questionContainer.appendChild(answerContainer);
@@ -201,6 +203,8 @@ function questionDisplayer(baseData, rootE) {
         answerForm.classList.add("answer-form");
         answerForm.addEventListener("submit", (e) => {
             addAnswerToQuestion(e, question.id);
+            document.getElementById("allQuestions").innerHTML="";
+            listAllTheQuestions()
         });
 
 
@@ -212,6 +216,7 @@ function questionDisplayer(baseData, rootE) {
         const submitButton = document.createElement("button");
         submitButton.type = "submit";
         submitButton.textContent = "Submit Answer";
+
 
         answerForm.appendChild(answerInput);
         answerForm.appendChild(submitButton);
@@ -233,7 +238,7 @@ function sortingButton(sortBy) {
     allQ.innerHTML = "";
     const sortingButtons = document.getElementById('sortingButtons');
 
-    sortingButtons.insertAdjacentHTML('beforeend', `<button id="sorting_${sortBy}">sorting${sortBy}</button>`);
+    sortingButtons.insertAdjacentHTML('beforeend', `<button id="sorting_${sortBy}">Sort by: ${sortBy}</button>`);
 
     const sortingButton = sortingButtons.querySelector(`#sorting_${sortBy}`);
 
