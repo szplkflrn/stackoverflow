@@ -38,7 +38,6 @@ function onListClick(e) {
 
     createQuestion(question)
         .then((response) => {
-            console.log("Question added:", response);
             e.target.reset();
         })
         .catch((error) => {
@@ -81,7 +80,6 @@ async function fetchDetails(path) {
 
 function showTheAnswersForSpecificQuestion(id, answerContainer) {
     const url = `http://localhost:8080/answers/${id}`;
-    console.log("Fetching from URL:", url);
 
     fetchDetails(url)
         .then(data => {
@@ -99,7 +97,6 @@ function addAnswerToQuestion(e, question_id) {
     answer.question_id = question_id;
     createAnswer(answer)
         .then((response) => {
-            console.log("Answer added:", response);
             e.target.reset();
         })
         .catch((error) => {
@@ -137,7 +134,6 @@ function answerDisplayer(data, answerContainer) {
     answerContainer.innerHTML = "";
 
     data.forEach(answer => {
-        console.log(answer)
         const answerContainer1 = document.createElement("div");
         answerContainer1.classList.add("answer-container");
 
@@ -260,7 +256,6 @@ function sortingButton(sortBy) {
 
 
     sortingButton.addEventListener('click', () => {
-        console.log("Működik!");
         sortingMechanism(sortBy);
     });
 
