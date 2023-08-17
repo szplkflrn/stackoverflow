@@ -22,11 +22,11 @@ function createAnswer(answer) {
 function onListClick(e) {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const answer = Object.fromEntries(formData.entries());
+    const question = Object.fromEntries(formData.entries());
 
-    createQuestion(answer)
+    createQuestion(question)
         .then((response) => {
-            console.log("Answer added:", response);
+            console.log("Question added:", response);
             e.target.reset();
         })
         .catch((error) => {
@@ -61,14 +61,23 @@ async function fetchDetails(path) {
     return data;
 }
 
-function addAnswerToQuestion(e) {
+
+function showTheAnswersForSpecificQuestion(id){
+    fetchDetails(`http://localhost:8080/answers/${id}`)
+        .then(data => {
+
+        }
+
+};
+
+function addAnswerToQuestion(e, question_id){
     e.preventDefault();
     const formData = new FormData(e.target);
-    const question = Object.fromEntries(formData.entries());
-
-    createQuestion(question)
+    const answer = Object.fromEntries(formData.entries());
+    answer.question_id= question_id;
+    createAnswer(answer)
         .then((response) => {
-            ("Question added:", response);
+            console.log("Answer added:", response);
             e.target.reset();
         })
         .catch((error) => {
@@ -125,26 +134,38 @@ function questionDisplayer(baseData) {
 
         const count = document.createElement("p");
         count.textContent = `Answers: ${question.answer_count}`;
+      
+        const showTheAnswersButton = document.createElement("button");
+        showTheAnswersButton.textContent= "Show the answers";
+        showTheAnswersButton.addEventListener("click", showTheAnswersForSpecificQuestion);
 
         questionContainer.appendChild(title);
         questionContainer.appendChild(description);
         questionContainer.appendChild(date);
         questionContainer.appendChild(count);
+        if(question.answer_count > 0){
+        questionContainer.appendChild(showTheAnswersButton);
+         }
 
-        const form = document.createElement("form");
-        form.addEventListener("submit", addAnswerToQuestion);
-        const input = document.createElement("input");
-        input.type = "text";
-        input.placeholder = "Enter answer here:";
-        form.appendChild(input);
+                const answerForm = document.createElement("form");
+                answerForm.classList.add("answer-form");
+                answerForm.addEventListener("submit", (e) => {
+                    addAnswerToQuestion(e, question.id);
+                });
 
-        const answerbutton = document.createElement("button");
-        answerbutton.textContent = `Add answer`;
-        answerbutton.type = "button";
-        answerbutton.onclick = addAnswerToQuestion;
+                const answerInput = document.createElement("input");
+                answerInput.type = "text";
+                answerInput.placeholder = "Enter your answer here...";
+                answerInput.name = "answer";
 
-        form.appendChild(answerbutton);
-        questionContainer.appendChild(form);
+                const submitButton = document.createElement("button");
+                submitButton.type = "submit";
+                submitButton.textContent = "Submit Answer";
+
+                answerForm.appendChild(answerInput);
+                answerForm.appendChild(submitButton);
+                questionContainer.appendChild(answerForm);
+      
 
         const allQ = document.getElementById("allQuestions");
         allQ.appendChild(questionContainer);
@@ -155,7 +176,6 @@ function questionDisplayer(baseData) {
     });
 }
 
-
 //Sorting
 function sortingButton(sortBy) {
     const allQ = document.getElementById("allQuestions");
@@ -165,6 +185,7 @@ function sortingButton(sortBy) {
     rootDiv.insertAdjacentHTML('beforeend', `<button id="sorting_${sortBy}">sorting${sortBy}</button>`);
 
     const sortingButton = rootDiv.querySelector(`#sorting_${sortBy}`);
+
 
     sortingButton.addEventListener('click', () => {
         console.log("Működik!");
