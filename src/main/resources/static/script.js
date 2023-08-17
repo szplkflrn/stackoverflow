@@ -21,17 +21,19 @@ function createAnswer(answer) {
 
 function onListClick(e) {
     e.preventDefault();
-    const formData = new FormData(e.target);
-    const question = Object.fromEntries(formData.entries());
+    if (e.target && e.target.value !== undefined) {
+        const formData = new FormData(e.target);
+        const question = Object.fromEntries(formData.entries());
 
-    createQuestion(question)
-        .then((response) => {
-            console.log("Question added:", response);
-            e.target.reset();
-        })
-        .catch((error) => {
-            console.error("Error adding question:", error);
-        });
+        createQuestion(question)
+            .then((response) => {
+                console.log("Question added:", response);
+                e.target.reset();
+            })
+            .catch((error) => {
+                console.error("Error adding question:", error);
+            });
+    }
 }
 
 function displayHomePage() {
@@ -62,19 +64,24 @@ async function fetchDetails(path) {
 }
 
 
-function showTheAnswersForSpecificQuestion(id){
-    fetchDetails(`http://localhost:8080/answers/${id}`)
+ function showTheAnswersForSpecificQuestion(id,answerContainer) {
+    const url = `http://localhost:8080/answers/${id}`;
+    console.log("Fetching from URL:", url);
+
+    fetchDetails(url)
         .then(data => {
+            answerDisplayer(data, answerContainer);
+        })
+        .catch(error => {
+            console.error("An error occurred:", error);
+        });
+}
 
-        }
-
-};
-
-function addAnswerToQuestion(e, question_id){
+function addAnswerToQuestion(e, question_id) {
     e.preventDefault();
     const formData = new FormData(e.target);
     const answer = Object.fromEntries(formData.entries());
-    answer.question_id= question_id;
+    answer.question_id = question_id;
     createAnswer(answer)
         .then((response) => {
             console.log("Answer added:", response);
@@ -116,7 +123,29 @@ function listAllTheQuestions() {
         });
 }
 
-function questionDisplayer(baseData) {
+function answerDisplayer(data, answerContainer) {
+    answerContainer.innerHTML="";
+
+    data.forEach(answer => {
+        console.log(answer)
+        const answerContainer1 = document.createElement("div");
+        answerContainer1.classList.add("answer-container");
+
+        const answerContent = document.createElement("p");
+        answerContent.textContent = `Answer: ${answer.answer}`;
+
+        const formattedDate = new Date(answer.created.replace('T', ' ')).toLocaleString();
+        const date = document.createElement("p");
+        date.textContent = `Date: ${formattedDate}`;
+        answerContainer1.appendChild(answerContent);
+        answerContainer1.appendChild(date);
+        answerContainer.appendChild(answerContainer1);
+
+    });
+
+}
+
+function questionDisplayer(baseData, rootE) {
     baseData.forEach(question => {
         const questionContainer = document.createElement("div");
         questionContainer.classList.add("question-container");
@@ -134,38 +163,59 @@ function questionDisplayer(baseData) {
 
         const count = document.createElement("p");
         count.textContent = `Answers: ${question.answer_count}`;
-      
+
+        const answerContainer = document.createElement("div");
         const showTheAnswersButton = document.createElement("button");
-        showTheAnswersButton.textContent= "Show the answers";
-        showTheAnswersButton.addEventListener("click", showTheAnswersForSpecificQuestion);
+        showTheAnswersButton.textContent = "Show the answers";
+
+        const showTheAnswersBackButton = document.createElement("button");
+        showTheAnswersBackButton.textContent = "Close";
+        showTheAnswersBackButton.addEventListener("click", event => {
+            answerContainer.innerHTML="";
+            questionContainer.removeChild(showTheAnswersBackButton);
+            questionContainer.appendChild(showTheAnswersButton)
+        })
+
+
+        showTheAnswersButton.addEventListener("click", event => {
+            const questionId = question.id;
+            showTheAnswersForSpecificQuestion(questionId,answerContainer);
+            questionContainer.removeChild(showTheAnswersButton);
+            questionContainer.appendChild(showTheAnswersBackButton)
+
+        });
+
 
         questionContainer.appendChild(title);
         questionContainer.appendChild(description);
         questionContainer.appendChild(date);
         questionContainer.appendChild(count);
-        if(question.answer_count > 0){
-        questionContainer.appendChild(showTheAnswersButton);
-         }
+        questionContainer.appendChild(answerContainer);
 
-                const answerForm = document.createElement("form");
-                answerForm.classList.add("answer-form");
-                answerForm.addEventListener("submit", (e) => {
-                    addAnswerToQuestion(e, question.id);
-                });
+        if (question.answer_count > 0) {
+            questionContainer.appendChild(showTheAnswersButton);
+        }
 
-                const answerInput = document.createElement("input");
-                answerInput.type = "text";
-                answerInput.placeholder = "Enter your answer here...";
-                answerInput.name = "answer";
+        const answerForm = document.createElement("form");
+        answerForm.classList.add("answer-form");
+        answerForm.addEventListener("submit", (e) => {
+            addAnswerToQuestion(e, question.id);
+        });
 
-                const submitButton = document.createElement("button");
-                submitButton.type = "submit";
-                submitButton.textContent = "Submit Answer";
 
-                answerForm.appendChild(answerInput);
-                answerForm.appendChild(submitButton);
-                questionContainer.appendChild(answerForm);
-      
+        const answerInput = document.createElement("input");
+        answerInput.type = "text";
+        answerInput.placeholder = "Enter your answer here...";
+        answerInput.name = "answer";
+
+        const submitButton = document.createElement("button");
+        submitButton.type = "submit";
+        submitButton.textContent = "Submit Answer";
+
+        answerForm.appendChild(answerInput);
+        answerForm.appendChild(submitButton);
+        questionContainer.appendChild(answerForm);
+
 
         const allQ = document.getElementById("allQuestions");
         allQ.appendChild(questionContainer);
@@ -235,8 +285,6 @@ async function sortingMechanism(sortBy) {
         console.error("Error fetching and sorting data:", error);
     }
 }
-
-
 
 
 function main() {
