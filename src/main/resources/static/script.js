@@ -41,7 +41,7 @@ function displayHomePage() {
         <form id="questionForm">
             <div>
                 <label htmlFor="title"></label>
-                <input type="text" placeholder="Enter question here:" name="title">
+                <input type="text" id="inputField" placeholder="Enter question here:" name="title">
             </div>
             <div>
                 <button id="newquestion" type="submit">Add new Question</button>
@@ -69,7 +69,7 @@ function showTheAnswersForSpecificQuestion(id){
 
         }
 
-};
+}
 
 function addAnswerToQuestion(e, question_id){
     e.preventDefault();
