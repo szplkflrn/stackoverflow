@@ -21,7 +21,7 @@ public class AnswerService {
         return answerDAO.getAllAnswers();
     }
 
-    public AnswerDTO getAnswerById(int id) {
+    public List<AnswerDTO> getAnswerById(int id) {
         return answerDAO.getAnswerById(id);
     }
 
@@ -30,6 +30,6 @@ public class AnswerService {
     }
 
     public int addNewAnswer(NewAnswerDTO answerDTO) {
-        return answerDAO.addNewAnswer(new Answer(answerDTO.title(),0));
+        return answerDAO.addNewAnswer(new Answer(answerDTO.answer(),answerDTO.question_id()));
     }
 }

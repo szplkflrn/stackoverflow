@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AnswerDaoJdbc implements AnswerDAO{
+public class AnswerDaoJdbc implements AnswerDAO {
 
     private final ServerConnector serverConnector;
     private final Logger consoleLogger;
@@ -26,7 +26,7 @@ public class AnswerDaoJdbc implements AnswerDAO{
         List<AnswerDTO> allTheAnswers = new ArrayList<>();
         try (Connection connection = serverConnector.getConnection()) {
             String query = "SELECT * FROM answers";
-                    try (PreparedStatement preparedStatement = connection.prepareStatement(query);
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query);
                  ResultSet resultSet = preparedStatement.executeQuery()) {
                 while (resultSet.next()) {
                     AnswerDTO answer = new AnswerDTO(
@@ -44,8 +44,27 @@ public class AnswerDaoJdbc implements AnswerDAO{
     }
 
     @Override
-    public AnswerDTO getAnswerById(int id) {
-        return null;
+    public List<AnswerDTO> getAnswerById(int find) {
+        List<AnswerDTO> allTheQuestions = new ArrayList<>();
+        try (Connection connection = serverConnector.getConnection()) {
+            String query = "SELECT answers.* FROM answers LEFT JOIN questions ON questions.id = answers.question_id WHERE question_id = ?";
+            try (PreparedStatement preparedStatement = connection.prepareStatement(query)){
+                preparedStatement.setInt(1, find);
+             try (ResultSet resultSet = preparedStatement.executeQuery()){
+                    while (resultSet.next()) {
+                        AnswerDTO question = new AnswerDTO(
+                                resultSet.getInt("id"),
+                                resultSet.getString("answer"),
+                                LocalDateTime.parse(resultSet.getString("date")),
+                                resultSet.getInt("question_id"));
+                        allTheQuestions.add(question);
+                    }
+                }
+            }
+        } catch (SQLException e) {
+            consoleLogger.logInfo(e.getMessage());
+        }
+        return allTheQuestions;
     }
 
     @Override

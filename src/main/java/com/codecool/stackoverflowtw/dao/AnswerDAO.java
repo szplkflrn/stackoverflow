@@ -10,7 +10,7 @@ import java.util.List;
 public interface AnswerDAO {
 
     List<AnswerDTO> getAllAnswers();
-    AnswerDTO getAnswerById(int id);
+    List<AnswerDTO> getAnswerById(int id);
     boolean deleteAnswerById(int id);
     int addNewAnswer(Answer answer);
 
