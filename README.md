@@ -28,7 +28,3 @@
 - Navigate to StackoverflowTWApplication main class, and run it in the IDE
 - Visit site on localhost:8080
 
-
-# See also
-[Checkout our WIKI page](https://github.com/CodecoolGlobal/el-proyecte-grande-sprint-1-java-szplkflrn/wiki)
-
